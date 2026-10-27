@@ -1,0 +1,224 @@
+/* Pay2Win support site. Colors follow Pay2Win/Shared/Pay2WinTheme.swift. No external fonts or scripts. */
+:root {
+  --bg: #faebb0;
+  --panel: #fafcf7;
+  --ink: #1c2e30;
+  --ink-2: #3d5254;
+  --accent: #eb5945;
+  --accent-text: #b33a29;
+  --gold: #fac23b;
+  --mint: #40ad91;
+  --sky: #61c7e0;
+  --shadow: #1c2e30;
+  --line: #1c2e30;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #132123;
+    --panel: #1d3033;
+    --ink: #f3efdc;
+    --ink-2: #c3ccc6;
+    --accent: #ff7a66;
+    --accent-text: #ff9a89;
+    --shadow: #050b0c;
+    --line: #6f8c8f;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+a { color: var(--accent-text); text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* Header */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: ui-rounded, -apple-system, system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+}
+
+.brand img {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  border: 3px solid var(--line);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+.lang {
+  margin-left: auto;
+  display: flex;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.lang a, .lang span {
+  padding: 5px 11px;
+  text-decoration: none;
+}
+
+.lang span { background: var(--ink); color: var(--panel); }
+.lang a { color: var(--ink); background: var(--panel); }
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 3px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 var(--shadow);
+  padding: 22px 22px 8px;
+  margin-bottom: 24px;
+}
+
+h1, h2 {
+  font-family: ui-rounded, -apple-system, system-ui, sans-serif;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: clamp(30px, 7vw, 42px);
+  font-weight: 900;
+  margin: 0 0 6px;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 6px;
+  margin-top: 10px;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+h2 {
+  font-size: 21px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+p, ul, ol { margin: 0 0 14px; }
+li { margin-bottom: 4px; }
+
+.meta {
+  color: var(--ink-2);
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.meta div { margin: 2px 0; }
+
+/* Summary callout */
+.callout {
+  background: var(--gold);
+  color: #1c2e30;
+}
+
+.callout a { color: #8a2618; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  margin: 0;
+  padding: 3px 10px;
+  border: 2px solid #1c2e30;
+  border-radius: 999px;
+  background: #fafcf7;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Contact block */
+.contact {
+  background: var(--sky);
+  color: #1c2e30;
+}
+
+.contact a { color: #1c2e30; font-weight: 800; word-break: break-all; }
+
+.button {
+  display: inline-block;
+  margin: 2px 0 14px;
+  padding: 10px 18px;
+  background: #b83c2b;
+  color: #fff !important;
+  border: 3px solid #1c2e30;
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 #1c2e30;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.button:hover { transform: translate(1px, 1px); box-shadow: 2px 2px 0 #1c2e30; }
+
+/* Landing links */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+  margin: 0;
+}
+
+.card:hover { color: var(--ink); transform: translate(1px, 1px); box-shadow: 4px 4px 0 var(--shadow); }
+.card p { color: var(--ink-2); }
+
+.tagline {
+  font-size: 19px;
+  color: var(--ink-2);
+  margin-bottom: 24px;
+}
+
+/* Footer */
+.site-footer {
+  color: var(--ink-2);
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
