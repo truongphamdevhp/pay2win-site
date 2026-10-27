@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Play Pay2Win</title>
+  <meta name="description" content="Play Pay2Win in your browser: drag to dodge deadlines, bills and Mondays. No download, no account.">
+  <link rel="alternate" hreflang="en" href="play.html">
+  <link rel="alternate" hreflang="vi" href="vi/play.html">
+  <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="play.css">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="Game area. Drag to move your character and dodge the flying words."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="./" aria-label="Exit game">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">BEST</span><span class="metric-value" id="best">0</span></div>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" aria-label="Size 1 of 10">
+        SIZE 1/10
+        <div class="cells"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">Drag your way forward</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>New best!</span>
+        <p><strong>Want to be bigger?</strong> In the iPhone app, Growth Tokens make you bigger, and every extra size
+          absorbs one more hit each run. Coming soon to the App Store.</p>
+      </div>
+      <button class="restart" id="restart" type="button">↻ Restart Run</button>
+    </div>
+
+    <noscript><p class="noscript">This game needs JavaScript.</p></noscript>
+  </main>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "en",
+      score: "Score",
+      dragToStart: "Drag your way forward",
+      dodge: "Keep life moving",
+      caughtBy: "Life happened. Breathe and try again.",
+      caught: "PLOT TWIST",
+      obstacles: ["DEADLINE", "BILL", "MEETING", "EMAIL", "RENT", "FOMO", "TRAFFIC", "MONDAY", "ALARM", "SELF-DOUBT"]
+    };
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>

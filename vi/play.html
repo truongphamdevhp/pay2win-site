@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chơi Pay2Win</title>
+  <meta name="description" content="Chơi Pay2Win ngay trên trình duyệt: kéo để né deadline, hóa đơn và thứ Hai. Không cần tải, không cần tài khoản.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="Khu vực chơi. Kéo để di chuyển nhân vật và né các chữ đang bay tới."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="./" aria-label="Thoát game">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">KỶ LỤC</span><span class="metric-value" id="best">0</span></div>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" aria-label="Kích thước 1 trên 10">
+        KÍCH THƯỚC 1/10
+        <div class="cells"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">Kéo mình tiến về phía trước</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
+        <p><strong>Muốn to hơn?</strong> Trong app iPhone, Token Tăng Trưởng làm bạn to hơn, mỗi cỡ thêm giúp chịu
+          thêm một cú va chạm mỗi lượt. Sắp có trên App Store.</p>
+      </div>
+      <button class="restart" id="restart" type="button">↻ Chơi lại</button>
+    </div>
+
+    <noscript><p class="noscript">Game này cần bật JavaScript.</p></noscript>
+  </main>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "vi",
+      score: "Điểm",
+      dragToStart: "Kéo mình tiến về phía trước",
+      dodge: "Tiếp tục sống thôi",
+      caughtBy: "Đời va nhẹ. Thở rồi thử lại.",
+      caught: "ĐỜI RẼ NGANG",
+      obstacles: ["DEADLINE", "HÓA ĐƠN", "HỌP", "EMAIL", "TIỀN NHÀ", "FOMO", "KẸT XE", "THỨ HAI", "BÁO THỨC", "TỰ NGHI NGỜ"]
+    };
+  </script>
+  <script src="../game.js"></script>
+</body>
+</html>
