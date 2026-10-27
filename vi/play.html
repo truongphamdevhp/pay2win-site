@@ -4,37 +4,42 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Chơi Pay2Win</title>
-  <meta name="description" content="Chơi Pay2Win ngay trên trình duyệt: kéo để né deadline, hóa đơn và thứ Hai. Không cần tải, không cần tài khoản.">
+  <meta name="description" content="Chơi Pay2Win ngay trên trình duyệt: kéo nhân vật để né hạn chót, hóa đơn và thứ Hai. Không cần tải, không cần tài khoản.">
   <link rel="alternate" hreflang="en" href="../play.html">
   <link rel="alternate" hreflang="vi" href="play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
   <link rel="icon" href="../icon.png">
   <link rel="apple-touch-icon" href="../icon.png">
   <link rel="stylesheet" href="../play.css">
 </head>
 <body>
   <main class="stage" id="stage">
-    <canvas id="scene" role="img" aria-label="Khu vực chơi. Kéo để di chuyển nhân vật và né các chữ đang bay tới."></canvas>
+    <canvas id="scene" role="img" aria-label="Khu vực chơi. Chạm và kéo để di chuyển nhân vật, né các vật cản đang bay tới."></canvas>
 
     <div class="hud">
       <div class="hud-row">
-        <a class="exit chip-box" href="./" aria-label="Thoát game">
+        <a class="exit chip-box" href="./" aria-label="Rời màn chơi">
           <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
         </a>
         <div class="metric chip-box"><span class="metric-title">KỶ LỤC</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="Ngôn ngữ">
+          <option value="en">English</option><option value="vi" selected>Tiếng Việt</option>
+          <option value="ar">العربية</option><option value="he">עברית</option>
+        </select>
       </div>
       <div class="score" id="score" aria-hidden="true">0</div>
       <div class="meter" id="health-meter" role="img" aria-label="Máu 100 trên 100, kích thước 1 trên 10">
         <div class="meter-row"><span>MÁU <span id="health">100</span>/100</span><span>KÍCH THƯỚC 1/10</span></div>
         <div class="bar"><span id="health-fill"></span></div>
       </div>
-      <div class="state" id="state" aria-live="polite">Kéo mình tiến về phía trước</div>
+      <div class="state" id="state" aria-live="polite">Chạm và kéo để né vật cản</div>
     </div>
 
     <div class="over" id="over" hidden>
       <div class="summary">
         <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
-        <p><strong>Muốn to hơn?</strong> Trong app iPhone, mỗi Token Tăng Trưởng thêm 30 máu tối đa và làm bạn to
-          hơn. Sắp có trên App Store.</p>
+        <p>Hết máu rồi! Nghỉ một chút rồi thử lại nhé.</p>
       </div>
       <button class="restart" id="restart" type="button">↻ Chơi lại</button>
     </div>
@@ -45,19 +50,19 @@
   <script>
     window.P2W_STRINGS = {
       lang: "vi",
-      score: "Điểm",
-      dragToStart: "Kéo mình tiến về phía trước",
-      dodge: "Tiếp tục sống thôi",
+      dragToStart: "Chạm và kéo để né vật cản",
+      dodge: "Cố lên, né tiếp nào!",
       rush: "Giờ cao điểm!",
-      calm: "Yên một chút. Thở đi.",
-      hurt: "Đau đấy. Nhưng vẫn sống.",
-      caughtBy: "Đời va nhẹ. Thở rồi thử lại.",
-      caught: "ĐỜI RẼ NGANG",
+      calm: "Tạm yên rồi, thở chút nào!",
+      hurt: "Đau đấy! Vẫn trụ được!",
+      caughtBy: "Hết máu rồi! Thử lại nhé.",
+      caught: "HẾT MÁU RỒI!",
+      scoreFormat: "Điểm: {score}",
       healthAria: "Máu {hp} trên 100, kích thước 1 trên 10",
       hazards: [
-        ["EMAIL", "light"], ["BÁO THỨC", "light"], ["FOMO", "light"],
-        ["HỌP", "medium"], ["KẸT XE", "medium"], ["THỨ HAI", "medium"], ["HÓA ĐƠN", "medium"],
-        ["DEADLINE", "heavy"], ["TIỀN NHÀ", "heavy"], ["TỰ NGHI NGỜ", "heavy"]
+        ["THƯ ĐẾN", "light", 68], ["BÁO THỨC", "light", 68], ["SỢ BỎ LỠ", "light", 68],
+        ["HỌP HÀNH", "medium", 84], ["KẸT XE", "medium", 84], ["THỨ HAI", "medium", 76], ["HÓA ĐƠN", "medium", 68],
+        ["HẠN CHÓT", "heavy", 92], ["TIỀN NHÀ", "heavy", 68], ["TỰ TI", "heavy", 108]
       ]
     };
   </script>

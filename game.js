@@ -4,6 +4,14 @@
   "use strict";
 
   const S = window.P2W_STRINGS;
+  const direction = document.documentElement.dir === "rtl" ? "rtl" : "ltr";
+  const language = document.getElementById("language");
+  language.addEventListener("change", () => {
+    const pages = S.lang === "en"
+      ? { en: "play.html", vi: "vi/play.html", ar: "ar/play.html", he: "he/play.html" }
+      : { en: "../play.html", vi: "../vi/play.html", ar: "../ar/play.html", he: "../he/play.html" };
+    window.location.href = pages[language.value];
+  });
   const stage = document.getElementById("stage");
   const canvas = document.getElementById("scene");
   const ctx = canvas.getContext("2d");
@@ -116,9 +124,14 @@
     }
   }
 
-  function text(target, value, x, y, size, weight, color) {
+  function text(target, value, x, y, size, weight, color, maxWidth, writingDirection = direction) {
     target.fillStyle = color;
     target.font = `${weight} ${size}px ${FONT}`;
+    target.direction = writingDirection;
+    if (maxWidth) {
+      const measured = target.measureText(value).width;
+      if (measured > maxWidth) target.font = `${weight} ${size * maxWidth / measured}px ${FONT}`;
+    }
     target.textAlign = "center";
     target.textBaseline = "middle";
     target.fillText(value, x, y);
@@ -198,7 +211,7 @@
     box(ctx, 5, 5, o.w, o.h, "rgba(26, 56, 56, 0.42)");
     box(ctx, 0, 0, o.w, o.h, o.color, INK, 3);
     box(ctx, -o.w * 0.28, -(o.h / 2 + 3), 18, 7, "rgba(255, 255, 255, 0.62)", INK, 2);
-    text(ctx, o.label, 0, 1, Math.min(14, o.h * 0.34), o.weight, INK);
+    text(ctx, o.label, 0, 1, Math.min(14, o.h * 0.34), o.weight, INK, o.w - 12);
     ctx.restore();
   }
 
@@ -206,7 +219,7 @@
     for (const f of floaters) {
       const t = Math.min(1, f.age / 0.6);
       ctx.globalAlpha = 1 - t;
-      text(ctx, f.text, f.x, f.y - (reducedMotion.matches ? 0 : 36 * t), 22, 900, "#eb5945");
+      text(ctx, f.text, f.x, f.y - (reducedMotion.matches ? 0 : 36 * t), 22, 900, "#eb5945", undefined, "ltr");
     }
     ctx.globalAlpha = 1;
   }
@@ -216,14 +229,14 @@
     const cy = height / 2 - 58;
     box(ctx, cx + 7, cy + 7, 292, 108, "rgba(23, 51, 51, 0.52)");
     box(ctx, cx, cy, 292, 108, "#fae8a8", INK, 4);
-    text(ctx, S.caught, cx, cy - 17, 30, 900, "#eb5945");
-    text(ctx, `${S.score.toLocaleUpperCase(S.lang)}: ${currentScore}`, cx, cy + 23, 16, 700, INK);
+    text(ctx, S.caught, cx, cy - 17, 30, 900, "#eb5945", 268);
+    text(ctx, S.scoreFormat.replace("{score}", String(currentScore)), cx, cy + 23, 16, 700, INK, 268);
   }
 
   function spawnObstacle() {
-    const [label, tierName] = pick(S.hazards);
+    const [label, tierName, w] = pick(S.hazards);
     const tier = TIERS[tierName];
-    const w = Math.min(118, Math.max(68, Array.from(label).length * 8 + 28));
+    // Stable card geometry across locales; only shaped text is fitted to the card.
     const inset = 88;
     let start;
     let end;
@@ -486,13 +499,14 @@
   }
 
   stage.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("a, button")) return;
+    if (event.target.closest("a, button, select")) return;
     event.preventDefault();
     pointerDown = true;
     if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
     movePlayer(event);
   });
   stage.addEventListener("pointermove", (event) => {
+    if (event.target.closest("a, button, select")) return;
     // A mouse keeps steering after the first click; a finger steers while it touches.
     if (pointerDown || (event.pointerType === "mouse" && isRunning)) movePlayer(event);
   });

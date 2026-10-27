@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>العب Pay2Win</title>
+  <meta name="description" content="العب Pay2Win في المتصفح: اسحب لتفادي الفواتير والمواعيد النهائية. بلا تنزيل أو حساب.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="منطقة اللعب. المس واسحب لتحريك الشخصية وتفادي العوائق."></canvas>
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="مغادرة الجولة">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">أفضل نتيجة</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="اللغة">
+          <option value="en">English</option><option value="vi">Tiếng Việt</option>
+          <option value="ar" selected>العربية</option><option value="he">עברית</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="الصحة 100 من 100، الحجم 1 من 10">
+        <div class="meter-row"><span>الصحة <bdi dir="ltr"><span id="health">100</span>/100</bdi></span><span>الحجم <bdi dir="ltr">1/10</bdi></span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">المس واسحب لتفادي العوائق</div>
+    </div>
+    <div class="over" id="over" hidden>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>رقم قياسي جديد!</span>
+        <p>نفدت صحتك! التقط أنفاسك وحاول مجددًا.</p>
+      </div>
+      <button class="restart" id="restart" type="button">↻ العب مجددًا</button>
+    </div>
+    <noscript><p class="noscript">تحتاج هذه اللعبة إلى تفعيل JavaScript.</p></noscript>
+  </main>
+  <script>
+    window.P2W_STRINGS = {
+      lang: "ar",
+      dragToStart: "المس واسحب لتفادي العوائق",
+      dodge: "واصل التفادي!",
+      rush: "ساعة الذروة!",
+      calm: "لحظة لالتقاط الأنفاس.",
+      hurt: "ضربة مؤلمة، لكنك ما زلت صامدًا!",
+      caughtBy: "نفدت صحتك! حاول مجددًا.",
+      caught: "انتهت الجولة!",
+      scoreFormat: "النقاط: {score}",
+      healthAria: "الصحة {hp} من 100، الحجم 1 من 10",
+      hazards: [
+        ["بريد وارد", "light", 68], ["منبّه", "light", 68], ["فوات الفرص", "light", 68],
+        ["اجتماع", "medium", 84], ["ازدحام", "medium", 84], ["الاثنين", "medium", 76], ["فاتورة", "medium", 68],
+        ["موعد نهائي", "heavy", 92], ["إيجار", "heavy", 68], ["شك بالنفس", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js"></script>
+</body>
+</html>

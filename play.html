@@ -7,36 +7,41 @@
   <meta name="description" content="Play Pay2Win in your browser: drag to dodge deadlines, bills and Mondays. No download, no account.">
   <link rel="alternate" hreflang="en" href="play.html">
   <link rel="alternate" hreflang="vi" href="vi/play.html">
+  <link rel="alternate" hreflang="ar" href="ar/play.html">
+  <link rel="alternate" hreflang="he" href="he/play.html">
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="stylesheet" href="play.css">
 </head>
 <body>
   <main class="stage" id="stage">
-    <canvas id="scene" role="img" aria-label="Game area. Drag to move your character and dodge the flying words."></canvas>
+    <canvas id="scene" role="img" aria-label="Game area. Touch and drag to move your character and dodge flying obstacles."></canvas>
 
     <div class="hud">
       <div class="hud-row">
-        <a class="exit chip-box" href="./" aria-label="Exit game">
+        <a class="exit chip-box" href="./" aria-label="Leave run">
           <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
         </a>
         <div class="metric chip-box"><span class="metric-title">BEST</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="Language">
+          <option value="en" selected>English</option><option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option><option value="he">עברית</option>
+        </select>
       </div>
       <div class="score" id="score" aria-hidden="true">0</div>
       <div class="meter" id="health-meter" role="img" aria-label="Health 100 of 100, size 1 of 10">
         <div class="meter-row"><span>HP <span id="health">100</span>/100</span><span>SIZE 1/10</span></div>
         <div class="bar"><span id="health-fill"></span></div>
       </div>
-      <div class="state" id="state" aria-live="polite">Drag your way forward</div>
+      <div class="state" id="state" aria-live="polite">Touch and drag to dodge</div>
     </div>
 
     <div class="over" id="over" hidden>
       <div class="summary">
         <span class="new-best" id="new-best" hidden>New best!</span>
-        <p><strong>Want to be bigger?</strong> In the iPhone app, each Growth Token adds 30 max HP and makes you
-          bigger. Coming soon to the App Store.</p>
+        <p>Out of health! Take a breath and try again.</p>
       </div>
-      <button class="restart" id="restart" type="button">↻ Restart Run</button>
+      <button class="restart" id="restart" type="button">↻ Play again</button>
     </div>
 
     <noscript><p class="noscript">This game needs JavaScript.</p></noscript>
@@ -45,19 +50,19 @@
   <script>
     window.P2W_STRINGS = {
       lang: "en",
-      score: "Score",
-      dragToStart: "Drag your way forward",
-      dodge: "Keep life moving",
+      dragToStart: "Touch and drag to dodge",
+      dodge: "Keep dodging!",
       rush: "Rush hour!",
-      calm: "Quiet moment. Breathe.",
+      calm: "A moment to catch your breath.",
       hurt: "That hurt. Still alive.",
-      caughtBy: "Life happened. Breathe and try again.",
-      caught: "PLOT TWIST",
+      caughtBy: "Out of health! Try again.",
+      caught: "GAME OVER",
+      scoreFormat: "Score: {score}",
       healthAria: "Health {hp} of 100, size 1 of 10",
       hazards: [
-        ["EMAIL", "light"], ["ALARM", "light"], ["FOMO", "light"],
-        ["MEETING", "medium"], ["TRAFFIC", "medium"], ["MONDAY", "medium"], ["BILL", "medium"],
-        ["DEADLINE", "heavy"], ["RENT", "heavy"], ["SELF-DOUBT", "heavy"]
+        ["EMAIL", "light", 68], ["ALARM", "light", 68], ["MISSING OUT", "light", 68],
+        ["MEETING", "medium", 84], ["TRAFFIC", "medium", 84], ["MONDAY", "medium", 76], ["BILL", "medium", 68],
+        ["DEADLINE", "heavy", 92], ["RENT", "heavy", 68], ["SELF-DOUBT", "heavy", 108]
       ]
     };
   </script>

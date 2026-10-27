@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>לשחק ב־Pay2Win</title>
+  <meta name="description" content="משחקים ב־Pay2Win בדפדפן: גוררים כדי להתחמק מחשבונות ודדליינים. בלי הורדה ובלי חשבון.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="אזור המשחק. נוגעים וגוררים כדי להזיז את הדמות ולהתחמק ממכשולים."></canvas>
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="יציאה מהסיבוב">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">שיא</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="שפה">
+          <option value="en">English</option><option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option><option value="he" selected>עברית</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="חיים 100 מתוך 100, גודל 1 מתוך 10">
+        <div class="meter-row"><span>חיים <bdi dir="ltr"><span id="health">100</span>/100</bdi></span><span>גודל <bdi dir="ltr">1/10</bdi></span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">נוגעים וגוררים כדי להתחמק</div>
+    </div>
+    <div class="over" id="over" hidden>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>שיא חדש!</span>
+        <p>החיים נגמרו! לוקחים נשימה ומנסים שוב.</p>
+      </div>
+      <button class="restart" id="restart" type="button">↻ לשחק שוב</button>
+    </div>
+    <noscript><p class="noscript">המשחק דורש הפעלת JavaScript.</p></noscript>
+  </main>
+  <script>
+    window.P2W_STRINGS = {
+      lang: "he",
+      dragToStart: "נוגעים וגוררים כדי להתחמק",
+      dodge: "ממשיכים להתחמק!",
+      rush: "שעת עומס!",
+      calm: "רגע לתפוס נשימה.",
+      hurt: "זה כאב, אבל עוד מחזיקים מעמד!",
+      caughtBy: "החיים נגמרו! אפשר לנסות שוב.",
+      caught: "הסיבוב נגמר!",
+      scoreFormat: "ניקוד: {score}",
+      healthAria: "חיים {hp} מתוך 100, גודל 1 מתוך 10",
+      hazards: [
+        ["דואר נכנס", "light", 68], ["שעון מעורר", "light", 68], ["פחד להחמיץ", "light", 68],
+        ["ישיבה", "medium", 84], ["פקק", "medium", 84], ["יום שני", "medium", 76], ["חשבון", "medium", 68],
+        ["דדליין", "heavy", 92], ["שכר דירה", "heavy", 68], ["ספק עצמי", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js"></script>
+</body>
+</html>
