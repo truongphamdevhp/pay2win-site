@@ -23,9 +23,9 @@
         <div class="metric chip-box"><span class="metric-title">KỶ LỤC</span><span class="metric-value" id="best">0</span></div>
       </div>
       <div class="score" id="score" aria-hidden="true">0</div>
-      <div class="meter" aria-label="Kích thước 1 trên 10">
-        KÍCH THƯỚC 1/10
-        <div class="cells"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="meter" id="health-meter" role="img" aria-label="Máu 100 trên 100, kích thước 1 trên 10">
+        <div class="meter-row"><span>MÁU <span id="health">100</span>/100</span><span>KÍCH THƯỚC 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
       </div>
       <div class="state" id="state" aria-live="polite">Kéo mình tiến về phía trước</div>
     </div>
@@ -33,8 +33,8 @@
     <div class="over" id="over" hidden>
       <div class="summary">
         <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
-        <p><strong>Muốn to hơn?</strong> Trong app iPhone, Token Tăng Trưởng làm bạn to hơn, mỗi cỡ thêm giúp chịu
-          thêm một cú va chạm mỗi lượt. Sắp có trên App Store.</p>
+        <p><strong>Muốn to hơn?</strong> Trong app iPhone, mỗi Token Tăng Trưởng thêm 30 máu tối đa và làm bạn to
+          hơn. Sắp có trên App Store.</p>
       </div>
       <button class="restart" id="restart" type="button">↻ Chơi lại</button>
     </div>
@@ -48,9 +48,17 @@
       score: "Điểm",
       dragToStart: "Kéo mình tiến về phía trước",
       dodge: "Tiếp tục sống thôi",
+      rush: "Giờ cao điểm!",
+      calm: "Yên một chút. Thở đi.",
+      hurt: "Đau đấy. Nhưng vẫn sống.",
       caughtBy: "Đời va nhẹ. Thở rồi thử lại.",
       caught: "ĐỜI RẼ NGANG",
-      obstacles: ["DEADLINE", "HÓA ĐƠN", "HỌP", "EMAIL", "TIỀN NHÀ", "FOMO", "KẸT XE", "THỨ HAI", "BÁO THỨC", "TỰ NGHI NGỜ"]
+      healthAria: "Máu {hp} trên 100, kích thước 1 trên 10",
+      hazards: [
+        ["EMAIL", "light"], ["BÁO THỨC", "light"], ["FOMO", "light"],
+        ["HỌP", "medium"], ["KẸT XE", "medium"], ["THỨ HAI", "medium"], ["HÓA ĐƠN", "medium"],
+        ["DEADLINE", "heavy"], ["TIỀN NHÀ", "heavy"], ["TỰ NGHI NGỜ", "heavy"]
+      ]
     };
   </script>
   <script src="../game.js"></script>

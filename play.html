@@ -23,9 +23,9 @@
         <div class="metric chip-box"><span class="metric-title">BEST</span><span class="metric-value" id="best">0</span></div>
       </div>
       <div class="score" id="score" aria-hidden="true">0</div>
-      <div class="meter" aria-label="Size 1 of 10">
-        SIZE 1/10
-        <div class="cells"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="meter" id="health-meter" role="img" aria-label="Health 100 of 100, size 1 of 10">
+        <div class="meter-row"><span>HP <span id="health">100</span>/100</span><span>SIZE 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
       </div>
       <div class="state" id="state" aria-live="polite">Drag your way forward</div>
     </div>
@@ -33,8 +33,8 @@
     <div class="over" id="over" hidden>
       <div class="summary">
         <span class="new-best" id="new-best" hidden>New best!</span>
-        <p><strong>Want to be bigger?</strong> In the iPhone app, Growth Tokens make you bigger, and every extra size
-          absorbs one more hit each run. Coming soon to the App Store.</p>
+        <p><strong>Want to be bigger?</strong> In the iPhone app, each Growth Token adds 30 max HP and makes you
+          bigger. Coming soon to the App Store.</p>
       </div>
       <button class="restart" id="restart" type="button">↻ Restart Run</button>
     </div>
@@ -48,9 +48,17 @@
       score: "Score",
       dragToStart: "Drag your way forward",
       dodge: "Keep life moving",
+      rush: "Rush hour!",
+      calm: "Quiet moment. Breathe.",
+      hurt: "That hurt. Still alive.",
       caughtBy: "Life happened. Breathe and try again.",
       caught: "PLOT TWIST",
-      obstacles: ["DEADLINE", "BILL", "MEETING", "EMAIL", "RENT", "FOMO", "TRAFFIC", "MONDAY", "ALARM", "SELF-DOUBT"]
+      healthAria: "Health {hp} of 100, size 1 of 10",
+      hazards: [
+        ["EMAIL", "light"], ["ALARM", "light"], ["FOMO", "light"],
+        ["MEETING", "medium"], ["TRAFFIC", "medium"], ["MONDAY", "medium"], ["BILL", "medium"],
+        ["DEADLINE", "heavy"], ["RENT", "heavy"], ["SELF-DOUBT", "heavy"]
+      ]
     };
   </script>
   <script src="game.js"></script>

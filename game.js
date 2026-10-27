@@ -1,4 +1,4 @@
-// Pay2Win web version. Same rules as Pay2Win/Game/FingerDodgeScene.swift, at size 1 (no Growth Tokens).
+// Pay2Win web version. Same rules as Pay2Win/Game/FingerDodgeScene.swift, at size 1 with 100 HP (no Growth Tokens).
 // The page sets window.P2W_STRINGS before loading this file.
 (() => {
   "use strict";
@@ -13,7 +13,10 @@
     state: document.getElementById("state"),
     over: document.getElementById("over"),
     newBest: document.getElementById("new-best"),
-    restart: document.getElementById("restart")
+    restart: document.getElementById("restart"),
+    health: document.getElementById("health"),
+    healthFill: document.getElementById("health-fill"),
+    healthMeter: document.getElementById("health-meter")
   };
 
   // Rules, mirrored from FingerDodgeScene.
@@ -22,10 +25,41 @@
   const spawnInterval = (elapsed) => Math.max(0.35, 1.05 - elapsed * 0.018);
   const travelDuration = (elapsed) => Math.max(1.15, 3.4 - elapsed * 0.045);
   const clampedFrameDelta = (delta) => Math.min(MAX_FRAME_DELTA, Math.max(0, delta));
+  const INVULNERABILITY = 1.05;
+  const MAX_HEALTH = 100;
+
+  // Each pace cycle is a steady stretch, then a rush, then a breather. The difficulty ramp runs underneath.
+  const PACE_CYCLE = 14;
+  function pacePhase(elapsed) {
+    const position = Math.max(0, elapsed) % PACE_CYCLE;
+    if (position < 6) return "steady";
+    if (position < 10) return "rush";
+    return "calm";
+  }
+  function pacedSpawnInterval(elapsed) {
+    const base = spawnInterval(elapsed);
+    const phase = pacePhase(elapsed);
+    if (phase === "rush") return Math.max(0.22, base * 0.5);
+    if (phase === "calm") return base * 2;
+    return base;
+  }
+  function pacedTravelDuration(elapsed) {
+    const base = travelDuration(elapsed);
+    const phase = pacePhase(elapsed);
+    if (phase === "rush") return Math.max(0.9, base * 0.75);
+    if (phase === "calm") return base * 1.25;
+    return base;
+  }
+
+  // Heavier hazards hit harder, stand taller and use warmer colors.
+  const TIERS = {
+    light: { damage: 15, height: 38, colors: ["#6eb8e3", "#75cc9c"], weight: 700 },
+    medium: { damage: 25, height: 42, colors: ["#fac242", "#ba96db"], weight: 700 },
+    heavy: { damage: 40, height: 48, colors: ["#f57a61"], weight: 900 }
+  };
 
   const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
   const INK = "#1a3036";
-  const OBSTACLE_COLORS = ["#f57a61", "#6eb8e3", "#75cc9c", "#fac242", "#ba96db"];
   const BEST_KEY = "pay2win.web.best";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -44,6 +78,11 @@
   let lastFrame = 0;
   let wobbleStart = -1;
   let best = readBest();
+  let health = MAX_HEALTH;
+  let phase = "steady";
+  let clock = 0;
+  let invulnerableUntil = -1;
+  let floaters = [];
 
   const random = (min, max) => min + Math.random() * (max - min);
   const pick = (items) => items[Math.floor(Math.random() * items.length)];
@@ -126,10 +165,20 @@
     g.restore();
   }
 
+  function playerAlpha() {
+    const left = invulnerableUntil - clock;
+    if (left <= 0) return 1;
+    if (reducedMotion.matches) return 0.45;
+    // Five blinks over the invulnerability window, as in the app.
+    const t = (INVULNERABILITY - left) % 0.2;
+    return t < 0.1 ? 1 - 6.8 * t : 0.32 + 6.8 * (t - 0.1);
+  }
+
   function drawPlayer() {
     ctx.save();
     ctx.translate(player.x, player.y);
     ctx.rotate(player.angle);
+    ctx.globalAlpha = playerAlpha();
     box(ctx, 5, 5, 54, 68, "rgba(26, 59, 59, 0.28)");
     box(ctx, 0, 23, 28, 30, "#304f73", INK, 3);
     box(ctx, 0, 2, 48, 40, "#40ad91", INK, 3);
@@ -149,8 +198,17 @@
     box(ctx, 5, 5, o.w, o.h, "rgba(26, 56, 56, 0.42)");
     box(ctx, 0, 0, o.w, o.h, o.color, INK, 3);
     box(ctx, -o.w * 0.28, -(o.h / 2 + 3), 18, 7, "rgba(255, 255, 255, 0.62)", INK, 2);
-    text(ctx, o.label, 0, 1, 14, 700, INK);
+    text(ctx, o.label, 0, 1, Math.min(14, o.h * 0.34), o.weight, INK);
     ctx.restore();
+  }
+
+  function drawFloaters() {
+    for (const f of floaters) {
+      const t = Math.min(1, f.age / 0.6);
+      ctx.globalAlpha = 1 - t;
+      text(ctx, f.text, f.x, f.y - (reducedMotion.matches ? 0 : 36 * t), 22, 900, "#eb5945");
+    }
+    ctx.globalAlpha = 1;
   }
 
   function drawGameOver() {
@@ -163,7 +221,8 @@
   }
 
   function spawnObstacle() {
-    const label = pick(S.obstacles);
+    const [label, tierName] = pick(S.hazards);
+    const tier = TIERS[tierName];
     const w = Math.min(118, Math.max(68, Array.from(label).length * 8 + 28));
     const inset = 88;
     let start;
@@ -188,15 +247,17 @@
     obstacles.push({
       label,
       w,
-      h: 42,
-      color: pick(OBSTACLE_COLORS),
+      h: tier.height,
+      damage: tier.damage,
+      weight: tier.weight,
+      color: pick(tier.colors),
       angle: random(-0.16, 0.16),
       start,
       end,
       x: start[0],
       y: start[1],
       age: 0,
-      duration: travelDuration(elapsed)
+      duration: pacedTravelDuration(elapsed)
     });
   }
 
@@ -224,6 +285,7 @@
   }
 
   function checkCollisions() {
+    if (clock < invulnerableUntil) return;
     const px0 = player.x - 22;
     const px1 = player.x + 22;
     const py0 = player.y - 34;
@@ -231,7 +293,7 @@
     for (const o of obstacles) {
       const b = obstacleBounds(o);
       if (b.x0 < px1 && b.x1 > px0 && b.y0 < py1 && b.y1 > py0) {
-        endRun();
+        registerHit(o);
         return;
       }
     }
@@ -241,17 +303,51 @@
     ui.state.textContent = message;
   }
 
+  function phaseText(value) {
+    return value === "rush" ? S.rush : value === "calm" ? S.calm : S.dodge;
+  }
+
+  // The status label turns coral for a rush and mint for a breather while a run is live.
+  function showPace(value) {
+    ui.state.classList.toggle("pace-rush", value === "rush");
+    ui.state.classList.toggle("pace-calm", value === "calm");
+  }
+
+  function showHealth() {
+    const fraction = Math.max(0, Math.min(1, health / MAX_HEALTH));
+    ui.health.textContent = health;
+    ui.healthFill.style.width = `${fraction * 100}%`;
+    ui.healthFill.className = fraction > 0.5 ? "" : fraction > 0.25 ? "warn" : "low";
+    ui.healthMeter.setAttribute("aria-label", S.healthAria.replace("{hp}", health));
+  }
+
+  function registerHit(o) {
+    health = Math.max(0, health - o.damage);
+    showHealth();
+    if (health === 0) {
+      endRun();
+      return;
+    }
+    obstacles = obstacles.filter((other) => other !== o);
+    invulnerableUntil = clock + INVULNERABILITY;
+    floaters.push({ text: `-${o.damage}`, x: player.x, y: player.y - 62, age: 0 });
+    setState(S.hurt);
+    if (navigator.vibrate) navigator.vibrate(o.damage >= 40 ? 60 : o.damage >= 25 ? 40 : 20);
+  }
+
   function beginRunIfNeeded() {
     if (isRunning || hasRunEnded) return;
     isRunning = true;
     sinceSpawn = 0;
-    setState(S.dodge);
+    setState(phaseText(phase));
   }
 
   function endRun() {
     isRunning = false;
     hasRunEnded = true;
     pointerDown = false;
+    invulnerableUntil = -1;
+    showPace("steady");
     setState(S.caughtBy);
 
     const isNewBest = currentScore > best;
@@ -278,6 +374,12 @@
     player.angle = 0;
     player.x = width / 2;
     player.y = height / 2;
+    health = MAX_HEALTH;
+    phase = "steady";
+    invulnerableUntil = -1;
+    floaters = [];
+    showHealth();
+    showPace(phase);
     ui.score.textContent = "0";
     ui.over.hidden = true;
     setState(S.dragToStart);
@@ -307,6 +409,8 @@
   }
 
   function step(delta) {
+    const wasInvulnerable = clock < invulnerableUntil;
+    clock += delta;
     if (isRunning) {
       elapsed += delta;
       const nextScore = score(elapsed);
@@ -314,12 +418,25 @@
         currentScore = nextScore;
         ui.score.textContent = currentScore;
       }
+
+      const nextPhase = pacePhase(elapsed);
+      const invulnerable = clock < invulnerableUntil;
+      if (nextPhase !== phase) {
+        phase = nextPhase;
+        showPace(phase);
+        if (!invulnerable) setState(phaseText(phase));
+      }
+      if (wasInvulnerable && !invulnerable) setState(phaseText(phase));
+
       sinceSpawn += delta;
-      if (sinceSpawn > spawnInterval(elapsed)) {
+      if (sinceSpawn > pacedSpawnInterval(elapsed)) {
         spawnObstacle();
         sinceSpawn = 0;
       }
     }
+
+    for (const f of floaters) f.age += delta;
+    floaters = floaters.filter((f) => f.age < 0.6);
 
     // Obstacles keep flying after the run ends, like the app's SKActions.
     for (const o of obstacles) {
@@ -340,6 +457,7 @@
     for (const o of obstacles) drawObstacle(o);
     player.angle = wobbleAngle(now);
     drawPlayer();
+    drawFloaters();
     if (hasRunEnded) drawGameOver();
   }
 
