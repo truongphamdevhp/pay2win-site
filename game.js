@@ -61,13 +61,13 @@
 
   // Heavier hazards hit harder, stand taller and use warmer colors.
   const TIERS = {
-    light: { damage: 15, height: 38, colors: ["#6eb8e3", "#75cc9c"], weight: 700 },
-    medium: { damage: 25, height: 42, colors: ["#fac242", "#ba96db"], weight: 700 },
-    heavy: { damage: 40, height: 48, colors: ["#f57a61"], weight: 900 }
+    light: { damage: 15, height: 38, colors: ["#FFE04A"], weight: 700 },
+    medium: { damage: 25, height: 42, colors: ["#FF8A1F"], weight: 700 },
+    heavy: { damage: 40, height: 48, colors: ["#E8262E"], weight: 900 }
   };
 
   const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
-  const INK = "#1a3036";
+  const INK = "#111111";
   const BEST_KEY = "pay2win.web.best";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -144,26 +144,30 @@
     const g = layer.getContext("2d");
     g.scale(pixelRatio, pixelRatio);
 
-    box(g, width / 2, height / 2, width, height, "#61c7e0");
-    box(g, width - 58, 155, 54, 54, "#ffdb54", "rgba(51, 89, 87, 0.45)", 3);
+    const sky = g.createLinearGradient(0, 0, 0, height);
+    sky.addColorStop(0, "#4A86F7");
+    sky.addColorStop(0.72, "#6FA3FF");
+    sky.addColorStop(1, "#A6C6FF");
+    box(g, width / 2, height / 2, width, height, sky);
+    box(g, width - 58, 155, 54, 54, "#FFF3B0", "rgba(17, 17, 17, 0.55)", 3);
     drawCloud(g, 62, 188, 1);
     drawCloud(g, width - 48, 286, 0.72);
 
-    const buildingColors = ["#f0b88a", "#a3c2b8", "#d6a6c7"];
+    const buildingColors = ["#B9D0FF", "#A2BFFF", "#CCDCFF"];
     for (let x = -8, index = 0; x < width; index += 1) {
       const w = 34 + (index % 3) * 12;
       const h = 72 + (index % 4) * 18;
       const cx = x + w / 2;
       const cy = height - 60 - h / 2;
-      box(g, cx, cy, w, h, buildingColors[index % 3], "rgba(41, 79, 82, 0.5)", 2);
-      box(g, cx - w * 0.18, cy - h * 0.18, 8, 8, "rgba(255, 224, 102, 0.9)");
+      box(g, cx, cy, w, h, buildingColors[index % 3], "rgba(28, 58, 140, 0.45)", 2);
+      box(g, cx - w * 0.18, cy - h * 0.18, 8, 8, "rgba(255, 255, 255, 0.85)");
       x += w + 8;
     }
 
-    box(g, width / 2, height - 30, width + 8, 64, "#e3d17a", "#1f403d", 4);
-    box(g, width / 2, height - 66, width + 8, 14, "#70bf63", "#1f403d", 3);
+    box(g, width / 2, height - 30, width + 8, 64, "#8A4F24", INK, 4);
+    box(g, width / 2, height - 66, width + 8, 14, "#2DB84C", INK, 3);
     for (let x = 12, dark = false; x < width; x += 24, dark = !dark) {
-      box(g, x, height - 35, 24, 20, dark ? "#c2a657" : "#f5e091");
+      box(g, x, height - 35, 24, 20, dark ? "#8A4F24" : "#A8652F");
     }
     return layer;
   }
@@ -173,7 +177,7 @@
     g.translate(x, y);
     g.scale(scale, scale);
     for (const [px, py, w, h] of [[-31, 5, 34, 24], [-8, -7, 48, 38], [25, 2, 42, 28]]) {
-      box(g, px, py, w, h, "#f5fae8", "rgba(46, 107, 110, 0.55)", 2);
+      box(g, px, py, w, h, "#FFFFFF", "rgba(17, 17, 17, 0.55)", 2);
     }
     g.restore();
   }
@@ -192,26 +196,49 @@
     ctx.translate(player.x, player.y);
     ctx.rotate(player.angle);
     ctx.globalAlpha = playerAlpha();
-    box(ctx, 5, 5, 54, 68, "rgba(26, 59, 59, 0.28)");
-    box(ctx, 0, 23, 28, 30, "#304f73", INK, 3);
-    box(ctx, 0, 2, 48, 40, "#40ad91", INK, 3);
-    box(ctx, -17, 2, 12, 34, "#eb5945");
-    box(ctx, 0, -31, 36, 32, "#edab85", INK, 3);
-    box(ctx, -1, -42, 38, 13, "#293338");
-    box(ctx, -7, -31, 4, 4, "#1f2b33");
-    box(ctx, 7, -31, 4, 4, "#1f2b33");
+    box(ctx, 5, 5, 54, 68, "rgba(17, 17, 17, 0.28)");
+    box(ctx, 0, 23, 28, 30, "#1F2A44", INK, 3);
+    box(ctx, 0, 2, 48, 40, "#2BC46A", INK, 3);
+    box(ctx, -17, 2, 12, 34, "#1F4FD8");
+    box(ctx, 0, -31, 36, 32, "#F2B48C", INK, 3);
+    box(ctx, -1, -42, 38, 13, "#1A1A1A");
+    box(ctx, -7, -31, 4, 4, INK);
+    box(ctx, 7, -31, 4, 4, INK);
     box(ctx, 0, -23, 11, 3, "#753b33");
     ctx.restore();
+  }
+
+  // Shape complete words before choosing a balanced two-line layout. Card and
+  // collision geometry remain unchanged across languages. Cache once per spawn.
+  function hazardTextLayout(label, width, height, weight) {
+    const baseSize = 13;
+    ctx.font = `${weight} ${baseSize}px ${FONT}`;
+    const measure = (value) => ctx.measureText(value).width;
+    let lines = [label];
+    const words = label.trim().split(/\s+/);
+    if (measure(label) > width && words.length > 1) {
+      let bestWidth = Infinity;
+      for (let split = 1; split < words.length; split += 1) {
+        const candidate = [words.slice(0, split).join(" "), words.slice(split).join(" ")];
+        const widest = Math.max(...candidate.map(measure));
+        if (widest < bestWidth) { lines = candidate; bestWidth = widest; }
+      }
+    }
+    const scale = Math.min(1, width / Math.max(...lines.map(measure)), height / (lines.length * baseSize * 1.15));
+    return { lines, size: baseSize * scale };
   }
 
   function drawObstacle(o) {
     ctx.save();
     ctx.translate(o.x, o.y);
     ctx.rotate(o.angle);
-    box(ctx, 5, 5, o.w, o.h, "rgba(26, 56, 56, 0.42)");
+    box(ctx, 5, 5, o.w, o.h, "rgba(17, 17, 17, 0.42)");
     box(ctx, 0, 0, o.w, o.h, o.color, INK, 3);
     box(ctx, -o.w * 0.28, -(o.h / 2 + 3), 18, 7, "rgba(255, 255, 255, 0.62)", INK, 2);
-    text(ctx, o.label, 0, 1, Math.min(14, o.h * 0.34), o.weight, INK, o.w - 12);
+    o.textLayout.lines.forEach((line, index, lines) => {
+      const y = 1 + (index - (lines.length - 1) / 2) * o.textLayout.size * 1.15;
+      text(ctx, line, 0, y, o.textLayout.size, o.weight, o.damage === 40 ? "#FFFFFF" : INK);
+    });
     ctx.restore();
   }
 
@@ -219,7 +246,7 @@
     for (const f of floaters) {
       const t = Math.min(1, f.age / 0.6);
       ctx.globalAlpha = 1 - t;
-      text(ctx, f.text, f.x, f.y - (reducedMotion.matches ? 0 : 36 * t), 22, 900, "#eb5945", undefined, "ltr");
+      text(ctx, f.text, f.x, f.y - (reducedMotion.matches ? 0 : 36 * t), 22, 900, "#E8262E", undefined, "ltr");
     }
     ctx.globalAlpha = 1;
   }
@@ -227,9 +254,9 @@
   function drawGameOver() {
     const cx = width / 2;
     const cy = height / 2 - 58;
-    box(ctx, cx + 7, cy + 7, 292, 108, "rgba(23, 51, 51, 0.52)");
-    box(ctx, cx, cy, 292, 108, "#fae8a8", INK, 4);
-    text(ctx, S.caught, cx, cy - 17, 30, 900, "#eb5945", 268);
+    box(ctx, cx + 7, cy + 7, 292, 108, "rgba(17, 17, 17, 0.52)");
+    box(ctx, cx, cy, 292, 108, "#FFFFFF", INK, 4);
+    text(ctx, S.caught, cx, cy - 17, 30, 900, "#E8262E", 268);
     text(ctx, S.scoreFormat.replace("{score}", String(currentScore)), cx, cy + 23, 16, 700, INK, 268);
   }
 
@@ -259,6 +286,7 @@
     }
     obstacles.push({
       label,
+      textLayout: hazardTextLayout(label, w - 12, tier.height - 6, tier.weight),
       w,
       h: tier.height,
       damage: tier.damage,
@@ -320,7 +348,7 @@
     return value === "rush" ? S.rush : value === "calm" ? S.calm : S.dodge;
   }
 
-  // The status label turns coral for a rush and mint for a breather while a run is live.
+  // Pace and health use the same warning palette as the hazards.
   function showPace(value) {
     ui.state.classList.toggle("pace-rush", value === "rush");
     ui.state.classList.toggle("pace-calm", value === "calm");
@@ -361,7 +389,7 @@
     pointerDown = false;
     invulnerableUntil = -1;
     showPace("steady");
-    setState(S.caughtBy);
+    ui.state.hidden = true;
 
     const isNewBest = currentScore > best;
     if (isNewBest) {
@@ -395,6 +423,7 @@
     showPace(phase);
     ui.score.textContent = "0";
     ui.over.hidden = true;
+    ui.state.hidden = false;
     setState(S.dragToStart);
   }
 

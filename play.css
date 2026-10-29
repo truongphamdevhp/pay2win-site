@@ -1,11 +1,11 @@
 /* Pay2Win web game. HUD mirrors Pay2Win/Game/FingerDodgeView.swift. */
 :root {
-  --ink: #1c2e30;
-  --gold: #fac23b;
-  --accent: #eb5945;
-  --cream: #faebb0;
-  --mint: #40ad91;
-  --rush: #c2402e;
+  --ink: #111111;
+  --gold: #FFD400;
+  --accent: #E8262E;
+  --cream: #FFFFFF;
+  --mint: #22C55E;
+  --rush: #E8262E;
   color-scheme: light;
 }
 
@@ -28,9 +28,6 @@ body {
   overscroll-behavior: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  body { background: #132123; }
-}
 
 .stage {
   position: relative;
@@ -83,15 +80,15 @@ canvas {
 }
 
 .chip-box {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.94);
   border: 2px solid var(--ink);
-  box-shadow: 3px 3px 0 rgba(28, 46, 48, 0.85);
+  box-shadow: 3px 3px 0 rgba(17, 17, 17, 0.85);
 }
 
 .exit {
   pointer-events: auto;
-  width: 42px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   color: var(--ink);
