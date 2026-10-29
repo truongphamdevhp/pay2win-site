@@ -22,10 +22,15 @@
     over: document.getElementById("over"),
     newBest: document.getElementById("new-best"),
     restart: document.getElementById("restart"),
+    resultTitle: document.getElementById("result-title"),
+    resultScore: document.getElementById("result-score"),
     health: document.getElementById("health"),
     healthFill: document.getElementById("health-fill"),
     healthMeter: document.getElementById("health-meter")
   };
+  // A cached older page can briefly load the unversioned script during rollout.
+  // Preserve its canvas result until the new HTML and versioned assets arrive.
+  const hasTextResult = Boolean(ui.resultTitle && ui.resultScore);
 
   // Rules, mirrored from FingerDodgeScene.
   const MAX_FRAME_DELTA = 1 / 20;
@@ -70,6 +75,7 @@
   const INK = "#111111";
   const BEST_KEY = "pay2win.web.best";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const compactScreen = window.matchMedia("(max-height: 600px)");
 
   let width = 0;
   let height = 0;
@@ -398,6 +404,9 @@
       ui.best.textContent = best;
     }
     ui.newBest.hidden = !isNewBest;
+    if (hasTextResult) ui.resultScore.textContent = S.scoreFormat.replace("{score}", String(currentScore));
+    stage.classList.add("is-over");
+    ui.over.scrollTop = 0;
     ui.over.hidden = false;
     ui.restart.focus({ preventScroll: true });
     if (!reducedMotion.matches) wobbleStart = performance.now();
@@ -423,6 +432,7 @@
     showPace(phase);
     ui.score.textContent = "0";
     ui.over.hidden = true;
+    stage.classList.remove("is-over");
     ui.state.hidden = false;
     setState(S.dragToStart);
   }
@@ -500,7 +510,7 @@
     player.angle = wobbleAngle(now);
     drawPlayer();
     drawFloaters();
-    if (hasRunEnded) drawGameOver();
+    if (hasRunEnded && (!compactScreen.matches || !hasTextResult)) drawGameOver();
   }
 
   function frame(now) {
@@ -528,14 +538,14 @@
   }
 
   stage.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("a, button, select")) return;
+    if (event.target.closest("a, button, select, .over")) return;
     event.preventDefault();
     pointerDown = true;
     if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
     movePlayer(event);
   });
   stage.addEventListener("pointermove", (event) => {
-    if (event.target.closest("a, button, select")) return;
+    if (event.target.closest("a, button, select, .over")) return;
     // A mouse keeps steering after the first click; a finger steers while it touches.
     if (pointerDown || (event.pointerType === "mouse" && isRunning)) movePlayer(event);
   });
@@ -546,6 +556,10 @@
   window.addEventListener("resize", resize);
 
   ui.best.textContent = best;
+  if (hasTextResult) {
+    ui.over.classList.add("has-text-result");
+    ui.resultTitle.textContent = S.caught;
+  }
   resize();
   restart();
   requestAnimationFrame(frame);
