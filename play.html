@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="he" href="he/play.html">
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
-  <link rel="stylesheet" href="play.css?v=20261029-compact2">
+  <link rel="stylesheet" href="play.css?v=20261029-share1">
 </head>
 <body>
   <main class="stage" id="stage">
@@ -42,15 +42,29 @@
         <span class="new-best" id="new-best" hidden>New best!</span>
         <p>Take a breath and try again.</p>
       </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">Copy achievement image</button>
       <button class="restart" id="restart" type="button">↻ Play again</button>
     </div>
 
     <noscript><p class="noscript">This game needs JavaScript.</p></noscript>
   </main>
 
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>Touch and hold the image, or right-click it, then choose Copy Image.</p>
+    <img id="achievement-image" alt="CERTIFICATE OF SURVIVAL">
+    <button class="restart" id="close-achievement" type="button">Close</button>
+  </dialog>
+
   <script>
     window.P2W_STRINGS = {
       lang: "en",
+      copyImage: "Copy achievement image",
+      copied: "Image copied! Paste to share.",
+      copyFailed: "Could not copy image. Try again.",
+      shareCertificate: "CERTIFICATE OF SURVIVAL",
+      shareCaption: "I survived the chaos of daily life. Your turn!",
+      shareScore: "Score",
+      copyHint: "Touch and hold the image, or right-click it, then choose Copy Image.",
       dragToStart: "Touch and drag to dodge",
       dodge: "Keep dodging!",
       rush: "Rush hour!",
@@ -67,6 +81,6 @@
       ]
     };
   </script>
-  <script src="game.js?v=20261029-compact2"></script>
+  <script src="game.js?v=20261029-share1"></script>
 </body>
 </html>

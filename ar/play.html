@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="he" href="../he/play.html">
   <link rel="icon" href="../icon.png">
   <link rel="apple-touch-icon" href="../icon.png">
-  <link rel="stylesheet" href="../play.css?v=20261029-compact2">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
 </head>
 <body>
   <main class="stage" id="stage">
@@ -40,13 +40,27 @@
         <span class="new-best" id="new-best" hidden>رقم قياسي جديد!</span>
         <p>التقط أنفاسك وحاول مجددًا.</p>
       </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">نسخ صورة الإنجاز</button>
       <button class="restart" id="restart" type="button">↻ العب مجددًا</button>
     </div>
     <noscript><p class="noscript">تحتاج هذه اللعبة إلى تفعيل JavaScript.</p></noscript>
   </main>
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>اضغط مطولًا على الصورة أو انقر بزر الفأرة الأيمن، ثم اختر نسخ الصورة.</p>
+    <img id="achievement-image" alt="شهادة النجاة">
+    <button class="restart" id="close-achievement" type="button">إغلاق</button>
+  </dialog>
+
   <script>
     window.P2W_STRINGS = {
       lang: "ar",
+      copyImage: "نسخ صورة الإنجاز",
+      copied: "تم نسخ الصورة! الصقها لمشاركتها.",
+      copyFailed: "تعذر نسخ الصورة. حاول مجددًا.",
+      shareCertificate: "شهادة النجاة",
+      shareCaption: "نجوت من فوضى الحياة اليومية. حان دورك!",
+      shareScore: "النقاط",
+      copyHint: "اضغط مطولًا على الصورة أو انقر بزر الفأرة الأيمن، ثم اختر نسخ الصورة.",
       dragToStart: "المس واسحب لتفادي العوائق",
       dodge: "واصل التفادي!",
       rush: "ساعة الذروة!",
@@ -63,6 +77,6 @@
       ]
     };
   </script>
-  <script src="../game.js?v=20261029-compact2"></script>
+  <script src="../game.js?v=20261029-share1"></script>
 </body>
 </html>

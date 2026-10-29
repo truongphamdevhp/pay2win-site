@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="he" href="../he/play.html">
   <link rel="icon" href="../icon.png">
   <link rel="apple-touch-icon" href="../icon.png">
-  <link rel="stylesheet" href="../play.css?v=20261029-compact2">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
 </head>
 <body>
   <main class="stage" id="stage">
@@ -42,15 +42,29 @@
         <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
         <p>Nghỉ một chút rồi thử lại nhé.</p>
       </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">Sao chép ảnh thành tích</button>
       <button class="restart" id="restart" type="button">↻ Chơi lại</button>
     </div>
 
     <noscript><p class="noscript">Game này cần bật JavaScript.</p></noscript>
   </main>
 
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>Nhấn giữ ảnh, hoặc bấm chuột phải, rồi chọn Sao chép hình ảnh.</p>
+    <img id="achievement-image" alt="CHỨNG NHẬN SỐNG SÓT">
+    <button class="restart" id="close-achievement" type="button">Đóng</button>
+  </dialog>
+
   <script>
     window.P2W_STRINGS = {
       lang: "vi",
+      copyImage: "Sao chép ảnh thành tích",
+      copied: "Đã chép ảnh! Dán để khoe nhé.",
+      copyFailed: "Chưa chép được ảnh. Thử lại nhé.",
+      shareCertificate: "CHỨNG NHẬN SỐNG SÓT",
+      shareCaption: "Đã sống sót qua bộn bề cuộc đời. Tới lượt bạn!",
+      shareScore: "Điểm",
+      copyHint: "Nhấn giữ ảnh, hoặc bấm chuột phải, rồi chọn Sao chép hình ảnh.",
       dragToStart: "Chạm và kéo để né vật cản",
       dodge: "Cố lên, né tiếp nào!",
       rush: "Giờ cao điểm!",
@@ -67,6 +81,6 @@
       ]
     };
   </script>
-  <script src="../game.js?v=20261029-compact2"></script>
+  <script src="../game.js?v=20261029-share1"></script>
 </body>
 </html>

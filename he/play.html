@@ -11,7 +11,7 @@
   <link rel="alternate" hreflang="he" href="play.html">
   <link rel="icon" href="../icon.png">
   <link rel="apple-touch-icon" href="../icon.png">
-  <link rel="stylesheet" href="../play.css?v=20261029-compact2">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
 </head>
 <body>
   <main class="stage" id="stage">
@@ -40,13 +40,27 @@
         <span class="new-best" id="new-best" hidden>שיא חדש!</span>
         <p>לוקחים נשימה ומנסים שוב.</p>
       </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">העתקת תמונת הישג</button>
       <button class="restart" id="restart" type="button">↻ לשחק שוב</button>
     </div>
     <noscript><p class="noscript">המשחק דורש הפעלת JavaScript.</p></noscript>
   </main>
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>לחצו לחיצה ארוכה על התמונה או לחצו עליה בלחצן העכבר הימני ובחרו בהעתקת תמונה.</p>
+    <img id="achievement-image" alt="תעודת הישרדות">
+    <button class="restart" id="close-achievement" type="button">סגירה</button>
+  </dialog>
+
   <script>
     window.P2W_STRINGS = {
       lang: "he",
+      copyImage: "העתקת תמונת הישג",
+      copied: "התמונה הועתקה! אפשר להדביק.",
+      copyFailed: "לא ניתן להעתיק. נסו שוב.",
+      shareCertificate: "תעודת הישרדות",
+      shareCaption: "שרדתי את בלגן היומיום. עכשיו תורך!",
+      shareScore: "ניקוד",
+      copyHint: "לחצו לחיצה ארוכה על התמונה או לחצו עליה בלחצן העכבר הימני ובחרו בהעתקת תמונה.",
       dragToStart: "נוגעים וגוררים כדי להתחמק",
       dodge: "ממשיכים להתחמק!",
       rush: "שעת עומס!",
@@ -63,6 +77,6 @@
       ]
     };
   </script>
-  <script src="../game.js?v=20261029-compact2"></script>
+  <script src="../game.js?v=20261029-share1"></script>
 </body>
 </html>

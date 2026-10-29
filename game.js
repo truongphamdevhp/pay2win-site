@@ -28,6 +28,10 @@
     healthFill: document.getElementById("health-fill"),
     healthMeter: document.getElementById("health-meter")
   };
+  const copyAchievement = document.getElementById("copy-achievement");
+  const imagePreview = document.getElementById("achievement-preview");
+  const previewImage = document.getElementById("achievement-image");
+  let previewURL = null;
   // A cached older page can briefly load the unversioned script during rollout.
   // Preserve its canvas result until the new HTML and versioned assets arrive.
   const hasTextResult = Boolean(ui.resultTitle && ui.resultScore);
@@ -115,6 +119,89 @@
     } catch {
       // Private mode or blocked storage: the best score lasts for this visit only.
     }
+  }
+
+  function achievementCanvas() {
+    const image = document.createElement("canvas");
+    image.width = 1080;
+    image.height = 1350;
+    const g = image.getContext("2d");
+    const sky = g.createLinearGradient(0, 0, 0, 1350);
+    sky.addColorStop(0, "#4A86F7");
+    sky.addColorStop(0.72, "#6FA3FF");
+    sky.addColorStop(1, "#A6C6FF");
+    g.fillStyle = sky;
+    g.fillRect(0, 0, 1080, 1350);
+    text(g, "Pay2Win", 540, 117, 84, 900, "#FFFFFF", 900, "ltr");
+    box(g, 555, 735, 960, 990, INK);
+    box(g, 540, 717, 960, 990, "#FFFFFF", INK, 9);
+    text(g, S.shareCertificate, 540, 303, 52, 900, INK, 864);
+    // The same pixel character, drawn on the card without touching game state.
+    g.save();
+    g.translate(540, 570);
+    g.scale(2.4, 2.4);
+    box(g, 5, 5, 54, 68, "rgba(17,17,17,.28)");
+    box(g, 0, 23, 28, 30, "#1F2A44", INK, 3);
+    box(g, 0, 2, 48, 40, "#2BC46A", INK, 3);
+    box(g, -17, 2, 12, 34, "#1F4FD8");
+    box(g, 0, -31, 36, 32, "#F2B48C", INK, 3);
+    box(g, -1, -42, 38, 13, "#1A1A1A");
+    box(g, -7, -31, 4, 4, INK);
+    box(g, 7, -31, 4, 4, INK);
+    box(g, 0, -23, 11, 3, "#753b33");
+    g.restore();
+    text(g, S.shareScore, 540, 780, 42, 800, INK, 864);
+    text(g, String(currentScore), 540, 915, 228, 900, "#1F4FD8", 864, "ltr");
+    g.font = `700 39px ${FONT}`;
+    const words = S.shareCaption.split(/\s+/);
+    if (g.measureText(S.shareCaption).width <= 864 || words.length < 2) {
+      text(g, S.shareCaption, 540, 1107, 39, 700, INK, 864);
+    } else {
+      let lines = [S.shareCaption], widest = Infinity;
+      for (let i = 1; i < words.length; i++) {
+        const pair = [words.slice(0, i).join(" "), words.slice(i).join(" ")];
+        const measured = Math.max(...pair.map(line => g.measureText(line).width));
+        if (measured < widest) { widest = measured; lines = pair; }
+      }
+      lines.forEach((line, i) => text(g, line, 540, 1080 + i * 50, 39, 700, INK, 864));
+    }
+    text(g, "truongphamdevhp.github.io/pay2win-site", 540, 1281, 27, 700, "#FFFFFF", 960, "ltr");
+    return image;
+  }
+
+  function showImagePreview(blob) {
+    if (previewURL) URL.revokeObjectURL(previewURL);
+    previewURL = URL.createObjectURL(blob);
+    previewImage.src = previewURL;
+    imagePreview.showModal();
+  }
+
+  if (copyAchievement && imagePreview && previewImage) {
+    copyAchievement.addEventListener("click", async () => {
+      if (!hasRunEnded) return;
+      copyAchievement.disabled = true;
+      const png = new Promise((resolve, reject) => {
+        achievementCanvas().toBlob(blob => blob ? resolve(blob) : reject(new Error("PNG encoding failed")), "image/png");
+      });
+      try {
+        // Start the write in this click's user gesture. Passing the PNG promise
+        // preserves Safari activation while its encoder finishes asynchronously.
+        if (!navigator.clipboard?.write || !window.ClipboardItem) throw new Error("Image clipboard unavailable");
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
+        copyAchievement.textContent = S.copied;
+      } catch {
+        try { showImagePreview(await png); }
+        catch { copyAchievement.textContent = S.copyFailed; }
+      } finally {
+        copyAchievement.disabled = false;
+      }
+    });
+    document.getElementById("close-achievement").addEventListener("click", () => imagePreview.close());
+    imagePreview.addEventListener("close", () => {
+      previewImage.removeAttribute("src");
+      if (previewURL) URL.revokeObjectURL(previewURL);
+      previewURL = null;
+    });
   }
 
   // Draws a rectangle centered on (x, y), like SKShapeNode(rectOf:).
@@ -414,6 +501,7 @@
   }
 
   function restart() {
+    if (copyAchievement) copyAchievement.textContent = S.copyImage;
     obstacles = [];
     elapsed = 0;
     sinceSpawn = 0;
