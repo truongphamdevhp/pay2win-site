@@ -36,6 +36,7 @@ a:hover { color: var(--accent); }
 
 /* Header */
 .site-header {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -63,7 +64,7 @@ a:hover { color: var(--accent); }
 }
 
 .lang {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: flex;
   border: 3px solid var(--line);
   border-radius: 10px;
