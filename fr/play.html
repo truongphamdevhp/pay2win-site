@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jouer à Pay2Win</title>
+  <meta name="description" content="Esquive les factures, les réunions et les lundis. Joue dans ton navigateur, sans compte ni téléchargement.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="Terrain de jeu. Fais glisser ton perso pour éviter les obstacles."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="Quitter la partie">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">Record</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="Langue">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr" selected>Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="Vie : 100 sur 100, taille : 1 sur 10">
+        <div class="meter-row"><span>PV <span id="health">100</span>/100</span><span>Taille 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">Fais glisser ton perso pour esquiver</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>Nouveau record !</span>
+        <p>Reprends ton souffle et retente ta chance.</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">Copier l’image du résultat</button>
+      <button class="restart" id="restart" type="button">↻ Rejouer</button>
+    </div>
+
+    <noscript><p class="noscript">Active JavaScript pour jouer.</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>Fais un appui long ou un clic droit sur l’image, puis choisis « Copier l’image ».</p>
+    <img id="achievement-image" alt="DIPLÔME DE SURVIE">
+    <button class="restart" id="close-achievement" type="button">Fermer</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "fr",
+      copyImage: "Copier l’image du résultat",
+      copied: "Image copiée ! Tu peux la coller.",
+      copyFailed: "Impossible de copier l’image. Réessaie.",
+      shareCertificate: "DIPLÔME DE SURVIE",
+      shareCaption: "J’ai survécu au chaos du quotidien. À ton tour !",
+      shareScore: "Score",
+      copyHint: "Fais un appui long ou un clic droit sur l’image, puis choisis « Copier l’image ».",
+      dragToStart: "Fais glisser ton perso pour esquiver",
+      dodge: "Continue d’esquiver !",
+      rush: "C’est le rush !",
+      calm: "Un peu de répit !",
+      hurt: "Aïe ! Ça passe encore.",
+      caughtBy: "Plus de vie ! On remet ça ?",
+      caught: "FIN DE PARTIE",
+      scoreFormat: "Score : {score}",
+      healthAria: "Vie : {hp} sur 100, taille : 1 sur 10",
+      hazards: [
+        ["MAIL", "light", 68], ["RÉVEIL", "light", 68], ["FOMO", "light", 68],
+        ["RÉUNION", "medium", 84], ["BOUCHONS", "medium", 84], ["LUNDI", "medium", 76], ["FACTURE", "medium", 68],
+        ["À RENDRE", "heavy", 92], ["LOYER", "heavy", 68], ["DOUTE", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>

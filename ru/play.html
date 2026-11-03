@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Играть в Pay2Win</title>
+  <meta name="description" content="Уворачивайся от дедлайнов, счетов и понедельников прямо в браузере. Без скачивания и регистрации.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="Игровое поле. Перетаскивай персонажа, чтобы уворачиваться от препятствий."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="Выйти из игры">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">Рекорд</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="Язык">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru" selected>Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="Здоровье: 100 из 100. Размер: 1 из 10.">
+        <div class="meter-row"><span>Здоровье <span id="health">100</span>/100</span><span>Размер 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">Води пальцем по экрану, чтобы уворачиваться</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>Новый рекорд!</span>
+        <p>Переведи дух и попробуй ещё раз.</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">Скопировать картинку с результатом</button>
+      <button class="restart" id="restart" type="button">↻ Ещё раз</button>
+    </div>
+
+    <noscript><p class="noscript">Чтобы играть, включи JavaScript.</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>Нажми на картинку и подержи или щёлкни по ней правой кнопкой мыши и выбери «Копировать изображение».</p>
+    <img id="achievement-image" alt="ДИПЛОМ ЗА ВЫЖИВАНИЕ">
+    <button class="restart" id="close-achievement" type="button">Закрыть</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "ru",
+      copyImage: "Скопировать картинку с результатом",
+      copied: "Картинка скопирована! Теперь её можно вставить.",
+      copyFailed: "Не удалось скопировать картинку. Попробуй ещё раз.",
+      shareCertificate: "ДИПЛОМ ЗА ВЫЖИВАНИЕ",
+      shareCaption: "Ещё один безумный день позади. Теперь твоя очередь!",
+      shareScore: "Очки",
+      copyHint: "Нажми на картинку и подержи или щёлкни по ней правой кнопкой мыши и выбери «Копировать изображение».",
+      dragToStart: "Води пальцем по экрану, чтобы уворачиваться",
+      dodge: "Уворачивайся дальше!",
+      rush: "Час пик!",
+      calm: "Можно выдохнуть!",
+      hurt: "Больно! Но жить можно.",
+      caughtBy: "Здоровье на нуле! Попробуешь ещё?",
+      caught: "ИГРА ОКОНЧЕНА",
+      scoreFormat: "Очки: {score}",
+      healthAria: "Здоровье: {hp} из 100. Размер: 1 из 10.",
+      hazards: [
+        ["ПОЧТА", "light", 68], ["Подъём!", "light", 68], ["FOMO", "light", 68],
+        ["ВСТРЕЧА", "medium", 84], ["ПРОБКИ", "medium", 84], ["СНОВА ПН", "medium", 76], ["СЧЁТ", "medium", 68],
+        ["ДЕДЛАЙН", "heavy", 92], ["АРЕНДА", "heavy", 68], ["СОМНЕНИЯ", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>

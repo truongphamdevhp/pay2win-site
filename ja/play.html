@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pay2Winで遊ぶ</title>
+  <meta name="description" content="締め切りも請求書も月曜日も、指一本でよけよう。ダウンロードや登録なしで、ブラウザですぐ遊べます。">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="プレイエリア。指でキャラを動かして、飛んでくる障害物をよけよう。"></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="このプレイを終了">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">ベスト</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="言語">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja" selected>日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="体力 100／100、サイズ 1／10">
+        <div class="meter-row"><span>HP <span id="health">100</span>/100</span><span>サイズ 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">指でキャラを動かしてよけよう</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>自己ベスト更新！</span>
+        <p>ひと息ついたら、もう一回。</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">記録を画像でコピー</button>
+      <button class="restart" id="restart" type="button">↻ もう一度遊ぶ</button>
+    </div>
+
+    <noscript><p class="noscript">遊ぶにはJavaScriptをオンにしてください。</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>画像を長押しするか右クリックして、「画像をコピー」を選んでください。</p>
+    <img id="achievement-image" alt="サバイバル認定証">
+    <button class="restart" id="close-achievement" type="button">閉じる</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "ja",
+      copyImage: "記録を画像でコピー",
+      copied: "画像をコピーしました。貼り付けて使えます。",
+      copyFailed: "コピーできませんでした。もう一度お試しください。",
+      shareCertificate: "サバイバル認定証",
+      shareCaption: "今日もなんとか乗り切った。次は君の番！",
+      shareScore: "スコア",
+      copyHint: "画像を長押しするか右クリックして、「画像をコピー」を選んでください。",
+      dragToStart: "指でキャラを動かしてよけよう",
+      dodge: "その調子でよけて！",
+      rush: "ラッシュ突入！",
+      calm: "ちょっとひと息！",
+      hurt: "痛っ！ でもまだいける。",
+      caughtBy: "体力が尽きた！ もう一回？",
+      caught: "ゲームオーバー",
+      scoreFormat: "スコア：{score}",
+      healthAria: "体力 {hp}／100、サイズ 1／10",
+      hazards: [
+        ["メール", "light", 68], ["目覚まし", "light", 68], ["乗り遅れ", "light", 68],
+        ["会議", "medium", 84], ["渋滞", "medium", 84], ["月曜日", "medium", 76], ["請求書", "medium", 68],
+        ["締め切り", "heavy", 92], ["家賃", "heavy", 68], ["弱気", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>

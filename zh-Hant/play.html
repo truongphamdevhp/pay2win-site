@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>玩 Pay2Win</title>
+  <meta name="description" content="躲開帳單、會議，還有星期一！打開瀏覽器就能玩，免下載、免註冊。">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="遊戲區域。拖曳角色，閃開飛來的障礙物。"></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="離開這一局">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">最高分</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="語言">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant" selected>繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="目前血量 100，上限 100。體型 1 級，最高 10 級。">
+        <div class="meter-row"><span>血量 <span id="health">100</span>/100</span><span>體型 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">拖曳角色，閃開障礙物</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>破紀錄了！</span>
+        <p>喘口氣，再來一局吧。</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">複製成績圖片</button>
+      <button class="restart" id="restart" type="button">↻ 再玩一局</button>
+    </div>
+
+    <noscript><p class="noscript">請開啟 JavaScript 才能玩遊戲。</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>長按圖片或在圖片上按滑鼠右鍵，再選擇「複製圖片」。</p>
+    <img id="achievement-image" alt="生存證明書">
+    <button class="restart" id="close-achievement" type="button">關閉</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "zh-Hant",
+      copyImage: "複製成績圖片",
+      copied: "圖片複製好了，可以貼上囉！",
+      copyFailed: "圖片複製失敗，請再試一次。",
+      shareCertificate: "生存證明書",
+      shareCaption: "今天也撐過來了，換你上場！",
+      shareScore: "分數",
+      copyHint: "長按圖片或在圖片上按滑鼠右鍵，再選擇「複製圖片」。",
+      dragToStart: "拖曳角色，閃開障礙物",
+      dodge: "繼續閃！",
+      rush: "尖峰時段來了！",
+      calm: "喘口氣吧！",
+      hurt: "好痛！還撐得住。",
+      caughtBy: "沒血了！要再來一局嗎？",
+      caught: "遊戲結束",
+      scoreFormat: "分數：{score}",
+      healthAria: "目前血量 {hp}，上限 100。體型 1 級，最高 10 級。",
+      hazards: [
+        ["郵件", "light", 68], ["鬧鐘", "light", 68], ["怕錯過", "light", 68],
+        ["開會", "medium", 84], ["塞車", "medium", 84], ["星期一", "medium", 76], ["帳單", "medium", 68],
+        ["截止日", "heavy", 92], ["房租", "heavy", 68], ["自我懷疑", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>

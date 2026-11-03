@@ -7,10 +7,9 @@
   const direction = document.documentElement.dir === "rtl" ? "rtl" : "ltr";
   const language = document.getElementById("language");
   language.addEventListener("change", () => {
-    const pages = S.lang === "en"
-      ? { en: "play.html", vi: "vi/play.html", ar: "ar/play.html", he: "he/play.html" }
-      : { en: "../play.html", vi: "../vi/play.html", ar: "../ar/play.html", he: "../he/play.html" };
-    window.location.href = pages[language.value];
+    const root = S.lang === "en" ? "./" : "../";
+    const folder = language.value === "en" ? "" : language.value + "/";
+    window.location.href = root + folder + "play.html";
   });
   const stage = document.getElementById("stage");
   const canvas = document.getElementById("scene");

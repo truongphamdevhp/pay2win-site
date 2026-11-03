@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gioca a Pay2Win</title>
+  <meta name="description" content="Schiva scadenze, bollette e lunedì direttamente nel browser. Non devi scaricare nulla né creare un account.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="Area di gioco. Trascina il personaggio per schivare gli ostacoli."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="Esci dalla partita">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">Record</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="Lingua">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it" selected>Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="Vita: 100 su 100, taglia: 1 su 10">
+        <div class="meter-row"><span>PV <span id="health">100</span>/100</span><span>Taglia 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">Trascina il personaggio per schivare</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>Nuovo record!</span>
+        <p>Riprendi fiato e riprova.</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">Copia l’immagine del risultato</button>
+      <button class="restart" id="restart" type="button">↻ Rigioca</button>
+    </div>
+
+    <noscript><p class="noscript">Per giocare devi attivare JavaScript.</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>Tieni premuta l’immagine o fai clic con il tasto destro e scegli «Copia immagine».</p>
+    <img id="achievement-image" alt="DIPLOMA DI SOPRAVVIVENZA">
+    <button class="restart" id="close-achievement" type="button">Chiudi</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "it",
+      copyImage: "Copia l’immagine del risultato",
+      copied: "Immagine copiata! Ora puoi incollarla.",
+      copyFailed: "Impossibile copiare l’immagine. Riprova.",
+      shareCertificate: "DIPLOMA DI SOPRAVVIVENZA",
+      shareCaption: "Ho superato il caos di un’altra giornata. Ora tocca a te!",
+      shareScore: "Punteggio",
+      copyHint: "Tieni premuta l’immagine o fai clic con il tasto destro e scegli «Copia immagine».",
+      dragToStart: "Trascina il personaggio per schivare",
+      dodge: "Continua a schivare!",
+      rush: "È l’ora di punta!",
+      calm: "Riprendi fiato!",
+      hurt: "Ahi! Ma sei ancora in piedi.",
+      caughtBy: "Vita esaurita! Facciamo un’altra partita?",
+      caught: "GAME OVER",
+      scoreFormat: "Punti: {score}",
+      healthAria: "Vita: {hp} su 100, taglia: 1 su 10",
+      hazards: [
+        ["EMAIL", "light", 68], ["SVEGLIA", "light", 68], ["FOMO", "light", 68],
+        ["RIUNIONE", "medium", 84], ["TRAFFICO", "medium", 84], ["LUNEDÌ", "medium", 76], ["Bolletta", "medium", 68],
+        ["SCADENZA", "heavy", 92], ["AFFITTO", "heavy", 68], ["DUBBI", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>

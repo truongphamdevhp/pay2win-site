@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pay2Win 플레이</title>
+  <meta name="description" content="마감도 청구서도 월요일도 피해 보세요. 다운로드나 가입 없이 브라우저에서 바로 즐길 수 있어요.">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="게임 영역. 캐릭터를 손가락으로 끌어서 날아오는 장애물을 피하세요."></canvas>
+
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="../" aria-label="이번 판 나가기">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">최고 기록</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="언어">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko" selected>한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="체력 100 중 100, 크기 10 중 1">
+        <div class="meter-row"><span>체력 <span id="health">100</span>/100</span><span>크기 1/10</span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">캐릭터를 손가락으로 끌어서 피하세요</div>
+    </div>
+
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>최고 기록 경신!</span>
+        <p>숨 한번 돌리고 다시 해 봐요.</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">기록 이미지 복사</button>
+      <button class="restart" id="restart" type="button">↻ 다시 하기</button>
+    </div>
+
+    <noscript><p class="noscript">플레이하려면 자바스크립트를 켜 주세요.</p></noscript>
+  </main>
+
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>이미지를 길게 누르거나 마우스 오른쪽 버튼으로 클릭한 다음 이미지 복사를 선택하세요.</p>
+    <img id="achievement-image" alt="생존 인증서">
+    <button class="restart" id="close-achievement" type="button">닫기</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "ko",
+      copyImage: "기록 이미지 복사",
+      copied: "이미지를 복사했어요. 원하는 곳에 붙여 넣으세요.",
+      copyFailed: "이미지를 복사하지 못했어요. 다시 시도해 주세요.",
+      shareCertificate: "생존 인증서",
+      shareCaption: "오늘도 정신없는 하루를 버텼다! 다음은 네 차례야.",
+      shareScore: "점수",
+      copyHint: "이미지를 길게 누르거나 마우스 오른쪽 버튼으로 클릭한 다음 이미지 복사를 선택하세요.",
+      dragToStart: "캐릭터를 손가락으로 끌어서 피하세요",
+      dodge: "계속 피해요!",
+      rush: "정신없이 몰려와요!",
+      calm: "잠깐 숨 돌려요!",
+      hurt: "아야! 그래도 아직 버틸 만해요.",
+      caughtBy: "체력이 바닥났어요! 한 판 더?",
+      caught: "게임 오버",
+      scoreFormat: "점수: {score}",
+      healthAria: "체력 100 중 {hp}, 크기 10 중 1",
+      hazards: [
+        ["메일", "light", 68], ["알람", "light", 68], ["소외감", "light", 68],
+        ["회의", "medium", 84], ["차 막힘", "medium", 84], ["월요일", "medium", 76], ["청구서", "medium", 68],
+        ["마감", "heavy", 92], ["월세", "heavy", 68], ["자기 의심", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>
