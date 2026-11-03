@@ -64,6 +64,8 @@ a:hover { color: var(--accent); }
 }
 
 .lang {
+  flex-wrap: wrap;
+  max-width: 100%;
   margin-inline-start: auto;
   display: flex;
   border: 3px solid var(--line);

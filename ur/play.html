@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pay2Win کھیلیں</title>
+  <meta name="description" content="نہ انسٹال کرنے کی ضرورت، نہ اکاؤنٹ کی۔ کردار کو انگلی سے گھسیٹیں اور بلوں اور کرائے سے بچیں۔">
+  <link rel="alternate" hreflang="en" href="../play.html">
+  <link rel="alternate" hreflang="vi" href="../vi/play.html">
+  <link rel="alternate" hreflang="ar" href="../ar/play.html">
+  <link rel="alternate" hreflang="he" href="../he/play.html">
+  <link rel="alternate" hreflang="de" href="../de/play.html">
+  <link rel="alternate" hreflang="es" href="../es/play.html">
+  <link rel="alternate" hreflang="fr" href="../fr/play.html">
+  <link rel="alternate" hreflang="it" href="../it/play.html">
+  <link rel="alternate" hreflang="ja" href="../ja/play.html">
+  <link rel="alternate" hreflang="ko" href="../ko/play.html">
+  <link rel="alternate" hreflang="pl" href="../pl/play.html">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/play.html">
+  <link rel="alternate" hreflang="ru" href="../ru/play.html">
+  <link rel="alternate" hreflang="zh-Hans" href="../zh-Hans/play.html">
+  <link rel="alternate" hreflang="zh-Hant" href="../zh-Hant/play.html">
+  <link rel="alternate" hreflang="fa" href="../fa/play.html">
+  <link rel="alternate" hreflang="ur" href="play.html">
+  <link rel="alternate" hreflang="ps" href="../ps/play.html">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../play.css?v=20261029-share1">
+</head>
+<body>
+  <main class="stage" id="stage">
+    <canvas id="scene" role="img" aria-label="کھیل کا میدان۔ کردار کو انگلی سے گھسیٹ کر رکاوٹوں سے بچائیں۔"></canvas>
+    <div class="hud">
+      <div class="hud-row">
+        <a class="exit chip-box" href="./" aria-label="راؤنڈ چھوڑیں">
+          <svg viewBox="0 0 15 15" aria-hidden="true"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+        </a>
+        <div class="metric chip-box"><span class="metric-title">بہترین</span><span class="metric-value" id="best">0</span></div>
+        <select class="language chip-box" id="language" aria-label="زبان">
+          <option value="en">English</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="ar">العربية</option>
+          <option value="he">עברית</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pl">Polski</option>
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="ru">Русский</option>
+          <option value="zh-Hans">简体中文</option>
+          <option value="zh-Hant">繁體中文</option>
+          <option value="fa">فارسی</option>
+          <option value="ur" selected>اردو</option>
+          <option value="ps">پښتو</option>
+        </select>
+      </div>
+      <div class="score" id="score" aria-hidden="true">0</div>
+      <div class="meter" id="health-meter" role="img" aria-label="جان 100 میں سے 100، سائز 10 میں سے 1">
+        <div class="meter-row"><span>جان <bdi dir="ltr"><span id="health">100</span>/100</bdi></span><span>سائز <bdi dir="ltr">1/10</bdi></span></div>
+        <div class="bar"><span id="health-fill"></span></div>
+      </div>
+      <div class="state" id="state" aria-live="polite">انگلی سے گھسیٹ کر بچیں</div>
+    </div>
+    <div class="over" id="over" hidden>
+      <div class="result" role="status"><h1 id="result-title"></h1><p id="result-score"></p></div>
+      <div class="summary">
+        <span class="new-best" id="new-best" hidden>نیا ریکارڈ!</span>
+        <p>ذرا سانس لیں، پھر کوشش کریں۔</p>
+      </div>
+      <button class="copy-achievement" id="copy-achievement" type="button" aria-live="polite">کامیابی کی تصویر کاپی کریں</button>
+      <button class="restart" id="restart" type="button">↻ دوبارہ کھیلیں</button>
+    </div>
+    <noscript><p class="noscript">کھیلنے کے لیے براؤزر میں جاوا اسکرپٹ آن کریں۔</p></noscript>
+  </main>
+  <dialog id="achievement-preview" class="achievement-preview">
+    <p>تصویر دبا کر رکھیں یا اس پر رائٹ کلک کریں، پھر تصویر کاپی کرنے کا آپشن چنیں۔</p>
+    <img id="achievement-image" alt="بچ نکلنے کی سند">
+    <button class="restart" id="close-achievement" type="button">بند کریں</button>
+  </dialog>
+
+  <script>
+    window.P2W_STRINGS = {
+      lang: "ur",
+      copyImage: "کامیابی کی تصویر کاپی کریں",
+      copied: "تصویر کاپی ہو گئی! اب اسے کہیں بھی پیسٹ کریں۔",
+      copyFailed: "تصویر کاپی نہیں ہوئی۔ دوبارہ کوشش کریں۔",
+      shareCertificate: "بچ نکلنے کی سند",
+      shareCaption: "آج کی بھاگ دوڑ سے بچ نکلا۔ اب آپ کی باری!",
+      shareScore: "اسکور",
+      copyHint: "تصویر دبا کر رکھیں یا اس پر رائٹ کلک کریں، پھر تصویر کاپی کرنے کا آپشن چنیں۔",
+      dragToStart: "انگلی سے گھسیٹ کر بچیں",
+      dodge: "بچتے رہیں!",
+      rush: "بھاگ دوڑ کا وقت!",
+      calm: "ذرا سانس لیں!",
+      hurt: "چوٹ لگی، مگر ابھی کھیل باقی ہے!",
+      caughtBy: "جان ختم! پھر کوشش کریں۔",
+      caught: "کھیل ختم!",
+      scoreFormat: "اسکور: {score}",
+      healthAria: "جان 100 میں سے {hp}، سائز 10 میں سے 1",
+      hazards: [
+        ["ای میل", "light", 68], ["الارم", "light", 68], ["فومو", "light", 68],
+        ["میٹنگ", "medium", 84], ["ٹریفک", "medium", 84], ["پیر", "medium", 76], ["بل", "medium", 68],
+        ["ڈیڈ لائن", "heavy", 92], ["کرایہ", "heavy", 68], ["خود پر شک", "heavy", 108]
+      ]
+    };
+  </script>
+  <script src="../game.js?v=20261103-languages"></script>
+</body>
+</html>
